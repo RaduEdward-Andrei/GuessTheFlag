@@ -47,9 +47,7 @@ struct ContentView: View {
                         Button {
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .clipShape(.capsule)
-                                .shadow(radius: 5)
+                            FlagImage(name: countries[number])
                         }
                         
                     }
@@ -109,6 +107,30 @@ struct ContentView: View {
         correctAnswer = Int.random(in: 0...2)
         userScore = 0
         round = 1
+    }
+}
+
+struct FlagImage: View {
+    let name: String
+    
+    var body: some View {
+        Image(name)
+            .flagModifiers()
+    }
+}
+
+struct FlagModifier: ViewModifier {
+    
+    func body(content: Content) -> some View {
+        content
+            .clipShape(.capsule)
+            .shadow(radius: 5)
+    }
+}
+
+extension View {
+    func flagModifiers() -> some View{
+        modifier(FlagModifier())
     }
 }
 
