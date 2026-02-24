@@ -18,6 +18,10 @@ struct ContentView: View {
     private let totalRounds = 8
     @State private var round = 1
     
+    @State private var selectedFlag: Int? = nil
+    @State private var rotations = Array(repeating: 0.0, count: 3)
+    @State private var isAnswered = false
+    
     var body: some View {
         ZStack {
             RadialGradient(stops: [
@@ -49,7 +53,14 @@ struct ContentView: View {
                         } label: {
                             FlagImage(name: countries[number])
                         }
-                        
+                        .rotation3DEffect(
+                            .degrees(rotations[number]), axis: (x: 0, y: 1, z: 0)
+                        )
+                        .opacity(isAnswered && selectedFlag != number ? 0.25 : 1)
+                        .scaleEffect(isAnswered && selectedFlag != number ? 0.85 : 1)
+                        .animation(.easeInOut(duration: 0.6), value: rotations[number])
+                        .animation(.easeInOut(duration: 0.6), value: isAnswered)
+                        .disabled(isAnswered)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -85,6 +96,13 @@ struct ContentView: View {
     }
     
     func flagTapped(_ number: Int) {
+        selectedFlag = number
+        isAnswered = true
+
+        withAnimation(.easeInOut(duration: 0.6)) {
+            rotations[number] += 360
+        }
+        
         if number == correctAnswer {
             scoreTitle = "Correct"
             userScore += 1
@@ -100,6 +118,10 @@ struct ContentView: View {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
         round += 1
+        
+        selectedFlag = nil
+        isAnswered = false
+        rotations = Array(repeating: 0.0, count: 3)
     }
     
     func reset() {
@@ -107,6 +129,10 @@ struct ContentView: View {
         correctAnswer = Int.random(in: 0...2)
         userScore = 0
         round = 1
+        
+        selectedFlag = nil
+        isAnswered = false
+        rotations = Array(repeating: 0.0, count: 3)
     }
 }
 
